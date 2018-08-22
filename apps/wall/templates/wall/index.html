@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<title>The wall</title>
+	<meta charset="utf-8">
+</head>
+<body>
+<h3>CodingDojo Wall </h3>
+<h4>Welcome {{user.first_name}}</h4>
+<a href="/logout" method='POST'>log off</a>
+
+ 	<p>{% if messages %}
+		{% for message in messages %}
+			{{ message }}
+		{% endfor%}
+	{% endif %}</p>
+
+<h4>Post a message</h4>
+<form action="/message" method="POST">
+	{% csrf_token %}
+	<textarea name='message'></textarea>
+	<p><input type="submit" name="posts" value="Post a message"></p>
+</form>
+<h4>Messages</h4>
+{% for wall_message in wall_messages %}
+
+	<p>Posted by {{wall_message.user.first_name}} {{wall_message.user.last_name}} - {{wall_message.user.created_at|date:"F jS Y"}}</p>
+	{{wall_message.message}}
+
+	{% for comment in comments %}
+		{% if comment.wall_message.id == wall_message.id %}
+			<p>{{comment.user.first_name}} {{comment.user.last_name}} commented
+			{{comment.comment}} on {{comment.created_at|date:"F jS Y"}}</p>
+		{% endif %}
+	{% endfor %}
+	
+	<form action="/comment/{{wall_message.id}}" method="POST">
+		{% csrf_token %}
+		<label for="comment">Add Comment:</label>
+		<textarea name="comment"></textarea>
+		<p><input type='submit' value="Comment"></p>
+	</form>
+{% endfor %}
+</body>
+</html>
